@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dominantAxis, dragDelta, gestureGoal, settleTarget, spinDelta, wheelDelta } from './navigation';
+import { dominantAxis, dragDelta, gestureGoal, isNewFlick, settleTarget, spinDelta, wheelDelta } from './navigation';
 
 describe('wheelDelta', () => {
 	it('scrolling down dives to smaller scales (negative)', () => {
@@ -78,5 +78,22 @@ describe('settleTarget', () => {
 	it('never leaves the scale', () => {
 		expect(settleTarget(0, -0.5, 34)).toBe(0);
 		expect(settleTarget(33, 33.5, 34)).toBe(33);
+	});
+});
+
+describe('isNewFlick', () => {
+	it('ignores a gesture that is still speeding up', () => {
+		expect(isNewFlick(30, 30, 60)).toBe(false);
+		expect(isNewFlick(12, 12, 40)).toBe(false);
+	});
+
+	it('ignores inertia slowing down, jitter included', () => {
+		expect(isNewFlick(80, 20, 15)).toBe(false);
+		expect(isNewFlick(80, 3, 6)).toBe(false);
+	});
+
+	it('spots the user scrolling again during the tail of the last flick', () => {
+		expect(isNewFlick(80, 8, 40)).toBe(true);
+		expect(isNewFlick(80, 30, 70)).toBe(true);
 	});
 });

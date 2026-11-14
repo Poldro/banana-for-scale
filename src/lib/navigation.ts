@@ -80,6 +80,24 @@ export function settleTarget(anchor: number, goal: number, count: number): numbe
 	return nearestIndex(target, count);
 }
 
+/** A fresh flick must be this much faster than the last event... */
+const FLICK_GROWTH = 1.6;
+/** ...after the gesture had slowed to under this fraction of its peak. */
+const FLICK_DECAY = 0.5;
+/** Ignores jitter in slow inertia tails (pixels). */
+const FLICK_MIN_JUMP = 6;
+
+/**
+ * Tells a new wheel flick apart from the inertia of the last one: inertia
+ * only slows down, so speeding up again after it has decayed means the user
+ * scrolled again.
+ */
+export function isNewFlick(peak: number, previous: number, current: number): boolean {
+	return (
+		previous < peak * FLICK_DECAY && current > previous * FLICK_GROWTH && current - previous > FLICK_MIN_JUMP
+	);
+}
+
 export function createNavigator(opts: NavigatorOptions): Navigator {
 	const state = { position: opts.start };
 	const spin = { angle: 0 };
@@ -88,6 +106,9 @@ export function createNavigator(opts: NavigatorOptions): Navigator {
 	let settleTimer: ReturnType<typeof setTimeout> | undefined;
 	/** Stop the current gesture started from; undefined between gestures. */
 	let anchor: number | undefined;
+	/** Wheel speed (px per event) of the current gesture: its peak and the last event. */
+	let wheelPeak = 0;
+	let wheelLast = 0;
 	let touched = false;
 
 	const duration = (base: number) => (opts.reducedMotion ? 0.25 : base);
@@ -105,9 +126,27 @@ export function createNavigator(opts: NavigatorOptions): Navigator {
 
 	function settle() {
 		const index = anchor === undefined ? nearestIndex(goal, opts.count) : settleTarget(anchor, goal, opts.count);
-		anchor = undefined;
+		endGesture();
 		animateTo(index, duration(0.7), 'power2.inOut');
 		opts.onSettle(index);
+	}
+
+	function endGesture() {
+		anchor = undefined;
+		wheelPeak = wheelLast = 0;
+	}
+
+	/** Wheel input: a fresh flick during the last one's inertia counts as a new gesture. */
+	function wheel(deltaY: number, deltaMode: number) {
+		// Line/page modes (mouse wheels) are discrete clicks; only pixel streams have inertia.
+		const speed = deltaMode === 0 ? Math.abs(deltaY) : 0;
+		if (anchor !== undefined && isNewFlick(wheelPeak, wheelLast, speed)) {
+			anchor = settleTarget(anchor, goal, opts.count);
+			wheelPeak = 0;
+		}
+		wheelPeak = Math.max(wheelPeak, speed);
+		wheelLast = speed;
+		nudge(wheelDelta(deltaY, deltaMode));
 	}
 
 	function nudge(delta: number) {
@@ -123,7 +162,7 @@ export function createNavigator(opts: NavigatorOptions): Navigator {
 
 	function goTo(index: number) {
 		clearTimeout(settleTimer);
-		anchor = undefined;
+		endGesture();
 		const target = nearestIndex(index, opts.count);
 		const distance = Math.abs(target - state.position);
 		animateTo(target, duration(Math.min(0.6 + distance * 0.08, 2.4)), 'power2.inOut');
@@ -157,12 +196,18 @@ export function createNavigator(opts: NavigatorOptions): Navigator {
 		tolerance: 2,
 		// A touch gesture sticks to the axis it started on: zoom or rotate.
 		lockAxis: true,
+		// Lifting the finger ends a swipe, so quick successive swipes each move a stop.
+		onRelease: () => {
+			if (anchor === undefined) return;
+			clearTimeout(settleTimer);
+			settle();
+		},
 		onChange: (self) => {
 			const event = self.event as WheelEvent | TouchEvent | PointerEvent;
 			if (event.type === 'wheel') {
-				const wheel = event as WheelEvent;
-				if (dominantAxis(wheel.deltaX, wheel.deltaY) === 'x') rotate(spinDelta(-wheel.deltaX));
-				else nudge(wheelDelta(wheel.deltaY, wheel.deltaMode));
+				const e = event as WheelEvent;
+				if (dominantAxis(e.deltaX, e.deltaY) === 'x') rotate(spinDelta(-e.deltaX));
+				else wheel(e.deltaY, e.deltaMode);
 			} else if (self.axis === 'x') {
 				rotate(spinDelta(self.deltaX));
 			} else {

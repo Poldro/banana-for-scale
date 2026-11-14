@@ -84,16 +84,34 @@ const foam: Generator = (ctx, r, t) => {
 	glow(ctx, 0, 0, r, 'rgba(120,80,220,0.18)');
 };
 
-const VOID = points(12, 60, 1.6);
+const VOID = points(12, 160, 1.6);
+const MIST = points(13, 6, 0.7);
+/** Uncharted scales: drifting mist, faint sparks and a question mark, not a picture of anything. */
 const voidGen: Generator = (ctx, r, t) => {
-	for (const [x, y, a] of VOID) {
-		const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(t * 0.4 + a * 20));
-		dot(ctx, x * r, y * r, 1, `rgba(150,140,200,${0.25 * twinkle})`);
+	ctx.globalCompositeOperation = 'lighter';
+	for (const [x, y, a, b] of MIST) {
+		const dx = Math.sin(t * 0.07 + a * TAU) * 0.15;
+		const dy = Math.cos(t * 0.05 + b * TAU) * 0.15;
+		glow(ctx, (x + dx) * r, (y + dy) * r, r * (0.45 + 0.4 * b), 'rgba(110,80,200,0.16)');
 	}
-	ring(ctx, r, 'rgba(150,140,200,0.12)');
+	for (const [x, y, a, b] of VOID) {
+		const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(t * 0.4 + a * 20));
+		dot(ctx, x * r, y * r, 0.8 + b, `rgba(190,180,255,${0.6 * twinkle})`);
+	}
+	ctx.globalCompositeOperation = 'source-over';
+	ring(ctx, r, 'rgba(170,160,230,0.35)');
 	ctx.setLineDash([4, 8]);
-	ring(ctx, r * 0.5, 'rgba(150,140,200,0.1)');
+	ring(ctx, r * 0.5, 'rgba(170,160,230,0.3)');
 	ctx.setLineDash([]);
+	if (r > 40 && r < 6000) {
+		ctx.font = `italic ${Math.round(r * 0.55)}px "Instrument Serif", Georgia, serif`;
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillStyle = 'rgba(200,190,255,0.22)';
+		ctx.fillText('?', 0, 0);
+		ctx.textBaseline = 'alphabetic';
+	}
+	label(ctx, 'no experiment reaches this far', 0, r * 0.5 + 20, r);
 };
 
 const COLOR_CHARGE = ['#ff5a6e', '#57e38b', '#5aa2ff'];
