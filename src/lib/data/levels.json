@@ -8,6 +8,9 @@
 		"visual": {
 			"type": "generated",
 			"kind": "foam"
+		},
+		"model": {
+			"kind": "foam"
 		}
 	},
 	{
@@ -41,6 +44,9 @@
 		"visual": {
 			"type": "generated",
 			"kind": "proton"
+		},
+		"model": {
+			"kind": "proton"
 		}
 	},
 	{
@@ -52,10 +58,16 @@
 		"visual": {
 			"type": "generated",
 			"kind": "nucleus"
+		},
+		"model": {
+			"kind": "nucleus"
 		}
 	},
 	{
 		"id": "atom",
+		"model": {
+			"kind": "atom"
+		},
 		"exp": -9.26,
 		"title": "A potassium atom",
 		"fact": "Scale the nucleus up to a pea and the electron cloud would fill a football stadium. More than 99.9999999999% of an atom's volume is empty space — which is why the scroll from here to the nucleus is so dark.",
@@ -67,6 +79,9 @@
 	},
 	{
 		"id": "dna",
+		"model": {
+			"kind": "dna"
+		},
 		"exp": -8.7,
 		"title": "The DNA double helix",
 		"fact": "Two nanometres wide, yet the DNA in a single one of your cells would stretch about two metres if uncoiled. The popular claim that we share 60% of our DNA with bananas really refers to shared gene families, not identical code.",
@@ -85,6 +100,9 @@
 		"visual": {
 			"type": "generated",
 			"kind": "ribosome"
+		},
+		"model": {
+			"kind": "ribosome"
 		}
 	},
 	{
@@ -96,6 +114,9 @@
 		"visual": {
 			"type": "image",
 			"commons": "SARS-CoV-2 without background.png"
+		},
+		"model": {
+			"kind": "virus"
 		}
 	},
 	{
@@ -113,17 +134,23 @@
 				"left": 0,
 				"right": 0
 			}
+		},
+		"model": {
+			"kind": "ecoli"
 		}
 	},
 	{
 		"id": "rbc",
 		"exp": -5.12,
 		"title": "Red blood cells",
-		"fact": "You make more than two million every second. They have no nucleus — they are bags of haemoglobin that fold to squeeze through capillaries narrower than themselves. The white blob is a white blood cell.",
+		"fact": "You make more than two million every second. They have no nucleus — they are bags of haemoglobin that fold to squeeze through capillaries narrower than themselves.",
 		"bg": "#1a1012",
 		"visual": {
 			"type": "image",
 			"commons": "Red White Blood cells.jpg"
+		},
+		"model": {
+			"kind": "rbc"
 		}
 	},
 	{
@@ -135,6 +162,9 @@
 		"visual": {
 			"type": "image",
 			"commons": "Misc pollen colorized.jpg"
+		},
+		"model": {
+			"kind": "pollen"
 		}
 	},
 	{
@@ -163,6 +193,9 @@
 	},
 	{
 		"id": "banana",
+		"model": {
+			"kind": "banana"
+		},
 		"exp": -0.7,
 		"title": "A banana",
 		"fact": "Botanically a berry, mildly radioactive, and the internet's favourite unit of length. Almost every banana exported worldwide is a Cavendish: a sterile clone, genetically identical to all the others.",
@@ -207,6 +240,9 @@
 		"visual": {
 			"type": "image",
 			"commons": "Apollo 11 Launch - GPN-2000-000630.jpg"
+		},
+		"model": {
+			"kind": "saturn-v"
 		}
 	},
 	{
@@ -218,6 +254,9 @@
 		"visual": {
 			"type": "image",
 			"commons": "Burj Khalifa Image.jpg"
+		},
+		"model": {
+			"kind": "burj-khalifa"
 		}
 	},
 	{
@@ -229,6 +268,9 @@
 		"visual": {
 			"type": "image",
 			"commons": "Everest North Face toward Base Camp Tibet Luca Galuzzi 2006.jpg"
+		},
+		"model": {
+			"kind": "everest"
 		}
 	},
 	{
@@ -251,13 +293,19 @@
 		"visual": {
 			"type": "image",
 			"commons": "FullMoon2010.jpg"
+		},
+		"model": {
+			"kind": "moon"
 		}
 	},
 	{
 		"id": "earth",
+		"model": {
+			"kind": "earth"
+		},
 		"exp": 7.11,
 		"title": "Earth",
-		"fact": "The Blue Marble, photographed by the Apollo 17 crew in 1972. Most of the atmosphere's mass lies within 16 km of the surface: relative to the planet it is far thinner than a banana's peel.",
+		"fact": "Most of the atmosphere's mass lies within 16 km of the surface: relative to the planet it is far thinner than a banana's peel. The first photo of the whole sunlit Earth, the Blue Marble, was taken by the Apollo 17 crew in 1972.",
 		"bg": "#05070d",
 		"visual": {
 			"type": "image",
@@ -273,10 +321,16 @@
 		"visual": {
 			"type": "image",
 			"commons": "Jupiter and its shrunken Great Red Spot.jpg"
+		},
+		"model": {
+			"kind": "jupiter"
 		}
 	},
 	{
 		"id": "sun",
+		"model": {
+			"kind": "sun"
+		},
 		"exp": 9.14,
 		"title": "The Sun",
 		"fact": "Its light reaches us in 8 minutes 20 seconds, but the energy it carries was made in the core and spent tens of thousands of years or more bouncing its way out to the surface.",
@@ -295,6 +349,9 @@
 		"visual": {
 			"type": "generated",
 			"kind": "inner-orbits"
+		},
+		"model": {
+			"kind": "inner-orbits"
 		}
 	},
 	{
@@ -305,6 +362,9 @@
 		"bg": "#03040a",
 		"visual": {
 			"type": "generated",
+			"kind": "outer-orbits"
+		},
+		"model": {
 			"kind": "outer-orbits"
 		}
 	},
@@ -317,6 +377,9 @@
 		"visual": {
 			"type": "generated",
 			"kind": "heliosphere"
+		},
+		"model": {
+			"kind": "heliosphere"
 		}
 	},
 	{
@@ -327,6 +390,9 @@
 		"bg": "#030308",
 		"visual": {
 			"type": "generated",
+			"kind": "oort"
+		},
+		"model": {
 			"kind": "oort"
 		}
 	},
@@ -345,11 +411,14 @@
 		"id": "milky-way",
 		"exp": 20.98,
 		"title": "The Milky Way",
-		"fact": "100 to 400 billion stars. The Sun takes about 230 million years to circle the centre; the last time it was where it is now, the first dinosaurs were appearing. This is an artist's impression — no one can photograph our galaxy from outside.",
+		"fact": "100 to 400 billion stars. The Sun takes about 230 million years to circle the centre; the last time it was where it is now, the first dinosaurs were appearing. Every picture of it, this one included, is a reconstruction: no one can photograph our galaxy from outside.",
 		"bg": "#040309",
 		"visual": {
 			"type": "image",
 			"commons": "Artist’s impression of the Milky Way.jpg"
+		},
+		"model": {
+			"kind": "milky-way"
 		}
 	},
 	{
@@ -360,6 +429,9 @@
 		"bg": "#030208",
 		"visual": {
 			"type": "generated",
+			"kind": "local-group"
+		},
+		"model": {
 			"kind": "local-group"
 		}
 	},
@@ -372,17 +444,23 @@
 		"visual": {
 			"type": "generated",
 			"kind": "cosmic-web"
+		},
+		"model": {
+			"kind": "cosmic-web"
 		}
 	},
 	{
 		"id": "universe",
 		"exp": 26.94,
 		"title": "The observable universe",
-		"fact": "93 billion light-years across, even though the universe is only 13.8 billion years old — space kept expanding while the light was travelling. This is the cosmic microwave background, the oldest light there is, mapped across the whole sky by NASA's WMAP.",
+		"fact": "93 billion light-years across, even though the universe is only 13.8 billion years old — space kept expanding while the light was travelling. This is the cosmic microwave background, the oldest light there is, mapped across the whole sky by the WMAP and Planck satellites.",
 		"bg": "#020205",
 		"visual": {
 			"type": "image",
 			"commons": "WMAP 2012.png"
+		},
+		"model": {
+			"kind": "cmb"
 		}
 	}
 ]

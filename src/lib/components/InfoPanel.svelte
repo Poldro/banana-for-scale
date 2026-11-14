@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import type { Credit, Level } from '$lib/levels';
+	import { MODEL_ASSETS, modelCredits, type Credit, type Level } from '$lib/levels';
 	import { bananaComparison, formatLength, scientific, sizeRatio } from '$lib/scale';
 
 	interface Props {
@@ -13,10 +13,13 @@
 		bigger: Level | undefined;
 		/** -1 dives to the smaller stop, +1 zooms out to the bigger one. */
 		onStep: (direction: -1 | 1) => void;
+		/** Set when the stop is currently shown as a 3D model. */
+		model?: Level['model'];
 	}
 
-	let { level, credit, exp, reducedMotion, smaller, bigger, onStep }: Props = $props();
+	let { level, credit, exp, reducedMotion, smaller, bigger, onStep, model }: Props = $props();
 
+	const modelAssets = $derived(model ? MODEL_ASSETS[model.kind].map((id) => modelCredits[id]) : []);
 	const flyIn = $derived({ y: reducedMotion ? 0 : 14, duration: reducedMotion ? 0 : 450 });
 </script>
 
@@ -45,7 +48,15 @@
 			</p>
 			<p class="fact">{level.fact}</p>
 			<p class="credit">
-				{#if credit}
+				{#if model}
+					<span class="rotate">3D · drag sideways or ←/→ to rotate</span>
+					{#each modelAssets as asset (asset.file)}
+						· <a href={asset.source} target="_blank" rel="noopener noreferrer">{asset.author}</a>
+						({asset.license})
+					{:else}
+						· modelled in your browser
+					{/each}
+				{:else if credit}
 					Image: <a href={credit.source} target="_blank" rel="noopener noreferrer">{credit.author}</a>
 					· {#if credit.licenseUrl}<a href={credit.licenseUrl} target="_blank" rel="noopener noreferrer"
 							>{credit.license}</a
@@ -167,6 +178,10 @@
 		margin: 0.75rem 0 0;
 		font-size: 0.7rem;
 		color: var(--fg-faint);
+	}
+
+	.rotate {
+		color: var(--accent);
 	}
 
 	.credit a {

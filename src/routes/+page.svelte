@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
-	import { resolve } from '$app/paths';
+	import { base, resolve } from '$app/paths';
 	import InfoPanel from '$lib/components/InfoPanel.svelte';
 	import Ruler from '$lib/components/Ruler.svelte';
 	import { credits, exponents, levels, START_INDEX } from '$lib/levels';
 	import { createNavigator, type Navigator } from '$lib/navigation';
 	import { luminance } from '$lib/render/color';
+	import type { ModelDrawer } from '$lib/render/model-drawer';
 	import { createRenderer } from '$lib/render/renderer';
 	import { exponentAt, nearestIndex } from '$lib/scale';
 
@@ -16,6 +17,55 @@
 	let reducedMotion = $state(false);
 	let failed = $state(false);
 	let navigator: Navigator | undefined;
+	let spin = 0;
+	let use3d = $state(true);
+	let canRender3d = $state(false);
+	let drawer: ModelDrawer | null = null;
+	let renderer: ReturnType<typeof createRenderer> | undefined;
+
+	const THREE_D_KEY = 'banana-for-scale:3d';
+
+	function readPreference(): boolean {
+		try {
+			return localStorage.getItem(THREE_D_KEY) !== 'off';
+		} catch {
+			return true;
+		}
+	}
+
+	function hasWebGL(): boolean {
+		try {
+			return !!document.createElement('canvas').getContext('webgl2');
+		} catch {
+			return false;
+		}
+	}
+
+	/** Loads three.js only when a 3D model is wanted. */
+	async function enable3d() {
+		if (!drawer) {
+			try {
+				const { createModelDrawer } = await import('$lib/three/model-drawer');
+				drawer = createModelDrawer(base);
+			} catch (error) {
+				console.warn('3D models unavailable, using photos instead', error);
+				canRender3d = false;
+				return;
+			}
+		}
+		if (use3d) renderer?.setModels(drawer);
+	}
+
+	function toggle3d() {
+		use3d = !use3d;
+		try {
+			localStorage.setItem(THREE_D_KEY, use3d ? 'on' : 'off');
+		} catch {
+			// Preference just won't persist.
+		}
+		if (use3d) void enable3d();
+		else renderer?.setModels(null);
+	}
 
 	const exp = $derived(exponentAt(exponents, position));
 	const index = $derived(nearestIndex(position, levels.length));
@@ -31,21 +81,25 @@
 		reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 		position = indexFromHash();
 
-		let renderer: ReturnType<typeof createRenderer>;
+		let r: ReturnType<typeof createRenderer>;
 		try {
-			renderer = createRenderer(canvas, levels, credits);
+			r = createRenderer(canvas, levels, credits);
 		} catch {
 			failed = true;
 			return;
 		}
+		renderer = r;
+		canRender3d = hasWebGL();
+		use3d = readPreference();
+		if (canRender3d && use3d) void enable3d();
 
 		let lastBg = '';
 		let raf = 0;
 		const t0 = performance.now();
 		const loop = (now: number) => {
 			const t = reducedMotion ? 0 : (now - t0) / 1000;
-			renderer.frame(position, exponentAt(exponents, position), t);
-			const bg = renderer.background(position);
+			r.frame(position, exponentAt(exponents, position), t, spin);
+			const bg = r.background(position);
 			if (bg !== lastBg) {
 				lastBg = bg;
 				const root = document.documentElement;
@@ -62,10 +116,12 @@
 			reducedMotion,
 			onChange: (p) => (position = p),
 			onSettle: (i) => history.replaceState(history.state, '', `#${levels[i].id}`),
-			onFirstInput: () => (showHint = false)
+			onFirstInput: () => (showHint = false),
+			onSpin: (angle) => (spin = angle),
+			spinTarget: canvas
 		});
 
-		const onResize = () => renderer.resize();
+		const onResize = () => r.resize();
 		const onHash = () => navigator?.goTo(indexFromHash());
 		window.addEventListener('resize', onResize);
 		window.addEventListener('hashchange', onHash);
@@ -75,6 +131,8 @@
 			navigator?.destroy();
 			window.removeEventListener('resize', onResize);
 			window.removeEventListener('hashchange', onHash);
+			drawer?.dispose();
+			drawer = null;
 		};
 	});
 </script>
@@ -87,7 +145,12 @@
 
 <header>
 	<h1>Banana <em>for</em> Scale</h1>
-	<a class="about" href={resolve('/credits')}>About &amp; credits</a>
+	<nav>
+		{#if canRender3d}
+			<button class="toggle" type="button" aria-pressed={use3d} onclick={toggle3d}>3D</button>
+		{/if}
+		<a class="about" href={resolve('/credits')}>About &amp; credits</a>
+	</nav>
 </header>
 
 {#if failed}
@@ -100,6 +163,7 @@
 	credit={credits[level.id]}
 	{exp}
 	{reducedMotion}
+	model={use3d && canRender3d ? level.model : undefined}
 	smaller={levels[index - 1]}
 	bigger={levels[index + 1]}
 	onStep={(direction) => navigator?.step(direction)}
@@ -120,6 +184,11 @@
 		height: 100%;
 		display: block;
 		touch-action: none;
+		cursor: grab;
+	}
+
+	canvas:active {
+		cursor: grabbing;
 	}
 
 	:global(body) {
@@ -148,6 +217,27 @@
 	}
 
 	h1 em {
+		color: var(--accent);
+	}
+
+	nav {
+		display: flex;
+		align-items: baseline;
+		gap: 0.9rem;
+	}
+
+	.toggle {
+		padding: 0.15rem 0.55rem;
+		border: 1px solid var(--fg-faint);
+		border-radius: 999px;
+		background: none;
+		color: var(--fg-dim);
+		font: 500 0.72rem var(--mono);
+		cursor: pointer;
+	}
+
+	.toggle[aria-pressed='true'] {
+		border-color: var(--accent);
 		color: var(--accent);
 	}
 

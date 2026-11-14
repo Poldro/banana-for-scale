@@ -73,8 +73,10 @@ test.describe('desktop input', () => {
 
 test('credits page lists every image with its license', async ({ page }) => {
 	await page.goto('/credits');
-	const rows = page.locator('tbody tr');
+	const rows = page.locator('table').first().locator('tbody tr');
 	await expect(rows).toHaveCount(34);
+	await expect(page.locator('table').nth(1).locator('tbody tr')).toHaveCount(27);
+	await expect(page.getByRole('link', { name: 'CC0' }).first()).toBeVisible();
 	await expect(page.getByRole('link', { name: 'CC BY-SA 3.0' }).first()).toBeVisible();
 	await page.getByRole('link', { name: 'Back to the banana' }).click();
 	await expect(heading(page)).toHaveText('A banana');

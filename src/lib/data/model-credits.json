@@ -1,0 +1,51 @@
+{
+	"banana": {
+		"file": "models/banana.glb",
+		"author": "Alexander Shulha / Poly Haven",
+		"license": "CC0",
+		"licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+		"source": "https://polyhaven.com/a/bananas"
+	},
+	"saturn-v": {
+		"file": "models/saturn-v.glb",
+		"author": "NASA 3D Resources",
+		"license": "Public domain",
+		"source": "https://github.com/nasa/NASA-3D-Resources/tree/master/3D%20Models/Saturn%20V"
+	},
+	"moon-texture": {
+		"file": "textures/moon.webp",
+		"author": "NASA's Scientific Visualization Studio (LRO data)",
+		"license": "Public domain",
+		"source": "https://svs.gsfc.nasa.gov/4720"
+	},
+	"moon-relief": {
+		"file": "textures/moon-relief.webp",
+		"author": "NASA's Scientific Visualization Studio (LRO data)",
+		"license": "Public domain",
+		"source": "https://svs.gsfc.nasa.gov/4720"
+	},
+	"cmb-texture": {
+		"file": "textures/cmb.webp",
+		"author": "ESA and the Planck Collaboration",
+		"license": "Public domain",
+		"source": "https://www.astropix.org/image/planck/planck13-002a"
+	},
+	"everest": {
+		"file": "textures/everest.webp",
+		"author": "Mapzen Terrain Tiles (SRTM, NASA/USGS)",
+		"license": "Public domain",
+		"source": "https://registry.opendata.aws/terrain-tiles/"
+	},
+	"earth-texture": {
+		"file": "textures/earth.webp",
+		"author": "Reto Stöckli/NASA GSFC (land surface, shallow water, clouds); Robert Simmon (ocean color, compositing, 3D globes, animation); MODIS Land Group; MODIS Science Data Support Team; MODIS Atmosphere Group;",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Land_shallow_topo_2048.jpg"
+	},
+	"jupiter-texture": {
+		"file": "textures/jupiter.webp",
+		"author": "NASA/JPL/Space Science Institute",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Jupiter_Cylindrical_Map_-_Dec_2000_PIA07782.jpg"
+	}
+}

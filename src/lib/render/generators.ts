@@ -12,7 +12,7 @@ export type Generator = (ctx: CanvasRenderingContext2D, r: number, t: number) =>
 const TAU = Math.PI * 2;
 
 /** Deterministic PRNG so illustrations look the same on every visit. */
-function rng(seed: number): () => number {
+export function rng(seed: number): () => number {
 	let a = seed >>> 0;
 	return () => {
 		a = (a + 0x6d2b79f5) >>> 0;
@@ -47,13 +47,18 @@ function dot(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number
 	ctx.fill();
 }
 
-function label(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, r: number) {
+export function label(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, r: number): void {
 	// Labels only make sense while the diagram is roughly on screen.
 	if (r < 80 || r > 6000) return;
 	ctx.font = '500 12px "IBM Plex Mono", ui-monospace, monospace';
 	ctx.fillStyle = 'rgba(220,225,255,0.75)';
 	ctx.textAlign = 'center';
+	// A dark halo keeps labels readable over bright, glowing parts.
+	ctx.shadowColor = 'rgba(0,0,0,0.85)';
+	ctx.shadowBlur = 6;
 	ctx.fillText(text, x, y);
+	ctx.shadowBlur = 0;
+	ctx.shadowColor = 'transparent';
 }
 
 function ring(ctx: CanvasRenderingContext2D, radius: number, color: string, width = 1) {

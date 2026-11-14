@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dragDelta, wheelDelta } from './navigation';
+import { dominantAxis, dragDelta, spinDelta, wheelDelta } from './navigation';
 
 describe('wheelDelta', () => {
 	it('scrolling down dives to smaller scales (negative)', () => {
@@ -25,5 +25,27 @@ describe('dragDelta', () => {
 
 	it('caps big swipes', () => {
 		expect(dragDelta(-10000)).toBe(-1.2);
+	});
+});
+
+describe('spinDelta', () => {
+	it('turns a sideways drag into a rotation, dragging right turns right', () => {
+		expect(spinDelta(100)).toBeCloseTo(1);
+		expect(spinDelta(-50)).toBeCloseTo(-0.5);
+	});
+
+	it('caps wild flicks', () => {
+		expect(spinDelta(1e5)).toBe(Math.PI / 2);
+	});
+});
+
+describe('dominantAxis', () => {
+	it('picks the axis with clearly more movement', () => {
+		expect(dominantAxis(30, 4)).toBe('x');
+		expect(dominantAxis(2, -40)).toBe('y');
+	});
+
+	it('treats diagonal moves as vertical, so zoom wins over rotation', () => {
+		expect(dominantAxis(20, 18)).toBe('y');
 	});
 });

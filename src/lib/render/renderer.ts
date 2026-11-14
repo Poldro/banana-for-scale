@@ -7,6 +7,7 @@ import type { Credit, Level } from '$lib/levels';
 import { formatLength, layerAlpha } from '$lib/scale';
 import { GENERATORS } from './generators';
 import { luminance, mixHex } from './color';
+import type { ModelDrawer } from './model-drawer';
 import { COMPACT_WIDTH, LENS_RADIUS, horizon, settledness, smallerLayout, type Point, type Stage } from './reference';
 
 /** Levels within this many positions of the view get their images loaded. */
@@ -23,7 +24,10 @@ const SIZE_FONT = '10px "IBM Plex Mono", ui-monospace, monospace';
 type ImageState = HTMLCanvasElement | 'loading' | 'error';
 
 export interface Renderer {
-	frame(position: number, exp: number, timeSeconds: number): void;
+	/** `spin` is the user's rotation (rad) applied to 3D models. */
+	frame(position: number, exp: number, timeSeconds: number, spin?: number): void;
+	/** Switches 3D models on (a drawer) or off (null); photos are the fallback. */
+	setModels(drawer: ModelDrawer | null): void;
 	resize(): void;
 	/** Background colour at the given position, for theming the UI. */
 	background(position: number): string;
@@ -61,6 +65,8 @@ export function createRenderer(
 	const images = new Map<string, ImageState>();
 	let width = 0;
 	let height = 0;
+	let models: ModelDrawer | null = null;
+	let spin = 0;
 
 	function resize() {
 		const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -94,6 +100,7 @@ export function createRenderer(
 	}
 
 	function drawLevel(level: Level, r: number, t: number) {
+		if (level.model && models?.draw(ctx, level.model.kind, r, t, spin)) return;
 		const visual = level.visual;
 		if (visual.type === 'generated') {
 			GENERATORS[visual.kind](ctx, r, t);
@@ -207,7 +214,8 @@ export function createRenderer(
 		ctx.restore();
 	}
 
-	function frame(position: number, exp: number, t: number) {
+	function frame(position: number, exp: number, t: number, userSpin = 0) {
+		spin = userSpin;
 		ctx.globalCompositeOperation = 'source-over';
 		ctx.globalAlpha = 1;
 		ctx.fillStyle = background(position);
@@ -216,7 +224,10 @@ export function createRenderer(
 
 		for (let i = levels.length - 1; i >= 0; i--) {
 			const level = levels[i];
-			if (Math.abs(i - position) <= PRELOAD_RADIUS) load(level);
+			if (Math.abs(i - position) <= PRELOAD_RADIUS) {
+				load(level);
+				if (level.model) models?.preload(level.model.kind);
+			}
 			const s = level.exp - exp;
 			const alpha = layerAlpha(s);
 			if (alpha < 0.004) continue;
@@ -230,5 +241,12 @@ export function createRenderer(
 	}
 
 	resize();
-	return { frame, resize, background };
+	return {
+		frame,
+		resize,
+		background,
+		setModels(drawer) {
+			models = drawer;
+		}
+	};
 }

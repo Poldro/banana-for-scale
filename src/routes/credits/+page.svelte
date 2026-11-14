@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
-	import { credits, levels } from '$lib/levels';
+	import { credits, levels, MODEL_ASSETS, modelCredits } from '$lib/levels';
 	import { formatLength } from '$lib/scale';
 
 	const rows = [...levels].reverse();
+	const modelled = rows.filter((l) => l.model);
 </script>
 
 <svelte:head>
@@ -57,9 +58,45 @@
 		</tbody>
 	</table>
 
+	<h2>3D models</h2>
+	<p>
+		Most stops can also be shown as rotatable 3D models (switch with the <em>3D</em> button). Most
+		are built from code in your browser, from published measurements (orbits, sky positions,
+		cell shapes); the others use the scans, models, maps and elevation data credited below.
+	</p>
+	<table>
+		<thead>
+			<tr><th>Stop</th><th>Asset</th><th>License</th></tr>
+		</thead>
+		<tbody>
+			{#each modelled as level (level.id)}
+				{@const assets = level.model ? MODEL_ASSETS[level.model.kind].map((id) => modelCredits[id]) : []}
+				{#each assets as asset (asset.file)}
+					<tr>
+						<td><a href="{resolve('/')}#{level.id}">{level.title}</a></td>
+						<td><a href={asset.source} target="_blank" rel="noopener noreferrer">{asset.author}</a></td>
+						<td>
+							{#if asset.licenseUrl}
+								<a href={asset.licenseUrl} target="_blank" rel="noopener noreferrer">{asset.license}</a>
+							{:else}
+								{asset.license}
+							{/if}
+						</td>
+					</tr>
+				{:else}
+					<tr>
+						<td><a href="{resolve('/')}#{level.id}">{level.title}</a></td>
+						<td class="dim">Procedural model</td>
+						<td class="dim">MIT (this project)</td>
+					</tr>
+				{/each}
+			{/each}
+		</tbody>
+	</table>
+
 	<p class="dim">
 		Images marked CC BY-SA remain under that license; the WebP copies in this project are resized
-		versions of the originals. Built with SvelteKit and GSAP. Source code is MIT-licensed.
+		versions of the originals. Built with SvelteKit, GSAP and three.js. Source code is MIT-licensed.
 	</p>
 </main>
 
