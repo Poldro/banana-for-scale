@@ -1,0 +1,71 @@
+# Banana for Scale
+
+Scroll or swipe from a banana down to the Planck length (10⁻³⁵ m) and up to the edge of the
+observable universe (10²⁷ m) — 34 stops across about 62 orders of magnitude, each with a short,
+data-rich fact and a comparison in bananas.
+
+Built with SvelteKit (static), Svelte 5, GSAP's Observer plugin and a plain 2D canvas.
+
+## How it works
+
+- **Even scroll per stop.** The position is a continuous index over the stops; the size exponent
+  (log₁₀ metres) is interpolated linearly between neighbours, so the empty gap between an atom and
+  its nucleus costs as much scrolling as going from a bee to a banana.
+- **Layered zoom.** Every stop is drawn at `10^(stopExp − viewExp)` times its natural size and
+  cross-fades as it grows or shrinks out of view (`src/lib/scale.ts`, `src/lib/render/`).
+- **Neighbours for scale.** While resting on a stop, the next smaller stop is drawn beside the
+  subject at true scale (inside a magnifier when it would be a speck) and the next bigger stop
+  appears as the dashed edge of a true-scale circle underneath. The text panel names both, with
+  the size ratio, and they are clickable (`src/lib/render/reference.ts`).
+- **Input.** Wheel, touch drag, keyboard (↑/↓, Page Up/Down, Space, Home, End) and the ruler on
+  the right. The view snaps to the nearest stop and the URL hash (`/#earth`) is a shareable deep
+  link. `prefers-reduced-motion` disables the animated tweens.
+- **Photos vs. illustrations.** Where a real image exists it comes from Wikimedia Commons. Inside
+  atoms, below the reach of any microscope, or where a diagram tells more than a photo, the
+  picture is drawn procedurally in the browser and labelled as an illustration.
+
+## Getting started
+
+```bash
+npm install
+npm run dev          # http://localhost:5173
+npm run build        # static site in build/
+```
+
+## Tests
+
+```bash
+npm test             # unit tests (Vitest): maths, formatting, data integrity
+npm run test:e2e     # end-to-end (Playwright): deep links, keyboard, wheel, ruler, credits
+npm run check        # svelte-check / TypeScript
+```
+
+The data test fails if a stop is out of order, an image has no credit, or a credited file is
+missing from `static/img/`.
+
+## Content
+
+All stops live in `src/lib/data/levels.json`, validated with zod at load time
+(`src/lib/levels.ts`). A stop is either an image (`{ "type": "image", "commons": "<file name>" }`,
+with optional `crop` and `blend`) or a generated illustration (`{ "type": "generated", "kind": … }`).
+
+### Images and licensing
+
+```bash
+npm run images            # fetch missing images
+npm run images -- --force # re-fetch everything
+```
+
+`scripts/fetch-images.mjs` queries the Wikimedia Commons API for each image stop, **refuses any
+file whose license is not public domain, CC0, CC BY or CC BY-SA**, or that has no author, then
+crops, resizes (longest side 1600 px) and converts it to WebP. Author, license and source URL are
+written to `src/lib/data/credits.json`, which feeds both the on-screen credit line and the
+[credits page](src/routes/credits/+page.svelte).
+
+## License
+
+Code and generated illustrations: [MIT](LICENSE).
+
+Images in `static/img/` are resized copies of works from Wikimedia Commons and remain under their
+own licenses (public domain, CC0, CC BY or CC BY-SA); see `src/lib/data/credits.json` or the
+in-app credits page for author and license of each file.

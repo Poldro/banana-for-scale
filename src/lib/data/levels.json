@@ -1,0 +1,388 @@
+[
+	{
+		"id": "planck",
+		"exp": -34.79,
+		"title": "The Planck length",
+		"fact": "The scale where our theories of space and time are expected to break down. Inflate a banana to the size of the observable universe and a Planck length would grow to about 70 nanometres — roughly the size of a virus.",
+		"bg": "#05030a",
+		"visual": {
+			"type": "generated",
+			"kind": "foam"
+		}
+	},
+	{
+		"id": "desert",
+		"exp": -26,
+		"title": "Uncharted territory",
+		"fact": "Between the smallest things ever measured and the Planck length lie some 16 orders of magnitude that no experiment has touched. Grand unified theories place new physics around 10⁻³² m, but nobody knows what is really down here.",
+		"bg": "#06040c",
+		"visual": {
+			"type": "generated",
+			"kind": "void"
+		}
+	},
+	{
+		"id": "quarks",
+		"exp": -18,
+		"title": "Quarks and electrons",
+		"fact": "Electrons and quarks show no measurable size at all: collider experiments say they are smaller than about 10⁻¹⁹ m, if they have a size. Physics treats them as points.",
+		"bg": "#080616",
+		"visual": {
+			"type": "generated",
+			"kind": "quarks"
+		}
+	},
+	{
+		"id": "proton",
+		"exp": -14.77,
+		"title": "A proton",
+		"fact": "Three quarks bound by gluons — yet the quarks' own masses add up to only about 1% of the proton's. The rest is the energy of the strong force itself, turned into mass via E = mc².",
+		"bg": "#0b0618",
+		"visual": {
+			"type": "generated",
+			"kind": "proton"
+		}
+	},
+	{
+		"id": "nucleus",
+		"exp": -14.09,
+		"title": "A potassium-40 nucleus",
+		"fact": "19 protons and 21 neutrons. A banana holds about 50 micrograms of potassium-40, and roughly 15 of these nuclei decay inside it every second. Your banana is (very mildly) radioactive.",
+		"bg": "#0d0716",
+		"visual": {
+			"type": "generated",
+			"kind": "nucleus"
+		}
+	},
+	{
+		"id": "atom",
+		"exp": -9.26,
+		"title": "A potassium atom",
+		"fact": "Scale the nucleus up to a pea and the electron cloud would fill a football stadium. More than 99.9999999999% of an atom's volume is empty space — which is why the scroll from here to the nucleus is so dark.",
+		"bg": "#0a0c1c",
+		"visual": {
+			"type": "generated",
+			"kind": "atom"
+		}
+	},
+	{
+		"id": "dna",
+		"exp": -8.7,
+		"title": "The DNA double helix",
+		"fact": "Two nanometres wide, yet the DNA in a single one of your cells would stretch about two metres if uncoiled. The popular claim that we share 60% of our DNA with bananas really refers to shared gene families, not identical code.",
+		"bg": "#0a1020",
+		"visual": {
+			"type": "generated",
+			"kind": "dna"
+		}
+	},
+	{
+		"id": "ribosome",
+		"exp": -7.6,
+		"title": "A ribosome",
+		"fact": "The protein factory of every living cell: it reads a messenger RNA and chains amino acids together, several per second. Each of your cells contains up to ten million of them.",
+		"bg": "#0b1322",
+		"visual": {
+			"type": "generated",
+			"kind": "ribosome"
+		}
+	},
+	{
+		"id": "virus",
+		"exp": -7,
+		"title": "A coronavirus",
+		"fact": "About 100 nanometres across — smaller than the wavelength of visible light (400–700 nm), which is why no ordinary light microscope can show you one. This is a medical illustration, not a photograph.",
+		"bg": "#101318",
+		"visual": {
+			"type": "image",
+			"commons": "SARS-CoV-2 without background.png"
+		}
+	},
+	{
+		"id": "ecoli",
+		"exp": -5.7,
+		"title": "E. coli bacteria",
+		"fact": "In ideal conditions E. coli divides every 20 minutes. Your gut hosts about as many bacterial cells as your body has human cells: tens of trillions of each.",
+		"bg": "#141414",
+		"visual": {
+			"type": "image",
+			"commons": "Escherichia coli O157-H7 CDC ID-10071.tif",
+			"crop": {
+				"top": 0,
+				"bottom": 0.16,
+				"left": 0,
+				"right": 0
+			}
+		}
+	},
+	{
+		"id": "rbc",
+		"exp": -5.12,
+		"title": "Red blood cells",
+		"fact": "You make more than two million every second. They have no nucleus — they are bags of haemoglobin that fold to squeeze through capillaries narrower than themselves. The white blob is a white blood cell.",
+		"bg": "#1a1012",
+		"visual": {
+			"type": "image",
+			"commons": "Red White Blood cells.jpg"
+		}
+	},
+	{
+		"id": "pollen",
+		"exp": -4.3,
+		"title": "Pollen grains",
+		"fact": "Pollen walls are made of sporopollenin, one of the toughest organic materials known. Grains survive in lake sediments for millions of years, letting scientists reconstruct ancient climates. Colours are added; electron microscopes see in greyscale.",
+		"bg": "#141a12",
+		"visual": {
+			"type": "image",
+			"commons": "Misc pollen colorized.jpg"
+		}
+	},
+	{
+		"id": "tardigrade",
+		"exp": -3.3,
+		"title": "A tardigrade",
+		"fact": "Half a millimetre of near-indestructibility. Tardigrades survive drying out, near-absolute-zero cold and the vacuum of space: in 2007 some rode outside a satellite and revived back on Earth.",
+		"bg": "#e4e6e3",
+		"visual": {
+			"type": "image",
+			"commons": "SEM image of Milnesium tardigradum in active state - journal.pone.0045682.g001-2.png",
+			"blend": "multiply"
+		},
+		"light": true
+	},
+	{
+		"id": "bee",
+		"exp": -1.82,
+		"title": "A honey bee",
+		"fact": "Foragers tell their sisters where flowers are with the waggle dance: the angle of the dance encodes the direction relative to the Sun, its duration the distance. Karl von Frisch shared a Nobel Prize for decoding it.",
+		"bg": "#1e1a10",
+		"visual": {
+			"type": "image",
+			"commons": "European honey bee extracts nectar.jpg"
+		}
+	},
+	{
+		"id": "banana",
+		"exp": -0.7,
+		"title": "A banana",
+		"fact": "Botanically a berry, mildly radioactive, and the internet's favourite unit of length. Almost every banana exported worldwide is a Cavendish: a sterile clone, genetically identical to all the others.",
+		"bg": "#f3ead2",
+		"light": true,
+		"visual": {
+			"type": "image",
+			"commons": "Banana-Single.jpg",
+			"blend": "multiply"
+		}
+	},
+	{
+		"id": "human",
+		"exp": 0.24,
+		"title": "A human",
+		"fact": "On a logarithmic scale we are not in the middle of things: halfway between the Planck length and the observable universe sits about 0.1 mm — the width of a hair, or a tardigrade.",
+		"bg": "#efe6d0",
+		"light": true,
+		"visual": {
+			"type": "image",
+			"commons": "Da Vinci Vitruve Luc Viatour.jpg",
+			"blend": "multiply"
+		}
+	},
+	{
+		"id": "whale",
+		"exp": 1.48,
+		"title": "A blue whale",
+		"fact": "Up to 30 metres and over 150 tonnes: the heaviest animal known to have ever lived, dinosaurs included. Its low-frequency calls can carry for hundreds of kilometres through the ocean.",
+		"bg": "#0d2233",
+		"visual": {
+			"type": "image",
+			"commons": "Blue Whale 001 noaa body color.jpg"
+		}
+	},
+	{
+		"id": "saturn-v",
+		"exp": 2.04,
+		"title": "A Saturn V rocket",
+		"fact": "111 metres of rocket that sent humans to the Moon. Its first stage burned about 13 tonnes of propellant every second for two and a half minutes.",
+		"bg": "#1a2230",
+		"visual": {
+			"type": "image",
+			"commons": "Apollo 11 Launch - GPN-2000-000630.jpg"
+		}
+	},
+	{
+		"id": "burj-khalifa",
+		"exp": 2.92,
+		"title": "The Burj Khalifa",
+		"fact": "828 metres, the tallest building in the world since 2010. From the top the horizon is about 100 km away.",
+		"bg": "#2a3442",
+		"visual": {
+			"type": "image",
+			"commons": "Burj Khalifa Image.jpg"
+		}
+	},
+	{
+		"id": "everest",
+		"exp": 3.95,
+		"title": "Mount Everest",
+		"fact": "8,849 metres above sea level — but its summit is not the point farthest from Earth's centre. That is Chimborazo in Ecuador, lifted by the planet's equatorial bulge.",
+		"bg": "#1c2838",
+		"visual": {
+			"type": "image",
+			"commons": "Everest North Face toward Base Camp Tibet Luca Galuzzi 2006.jpg"
+		}
+	},
+	{
+		"id": "hurricane",
+		"exp": 5.78,
+		"title": "A hurricane",
+		"fact": "Hurricane Isabel, photographed from the International Space Station in 2003. A mature hurricane releases heat from condensing rain at a rate around 200 times humanity's entire electricity generating capacity.",
+		"bg": "#0b1626",
+		"visual": {
+			"type": "image",
+			"commons": "Hurricane Isabel from ISS.jpg"
+		}
+	},
+	{
+		"id": "moon",
+		"exp": 6.54,
+		"title": "The Moon",
+		"fact": "It drifts away from us by about 3.8 cm a year, as tides slowly hand Earth's spin over to the Moon's orbit. Days on Earth are getting longer as a result.",
+		"bg": "#07090f",
+		"visual": {
+			"type": "image",
+			"commons": "FullMoon2010.jpg"
+		}
+	},
+	{
+		"id": "earth",
+		"exp": 7.11,
+		"title": "Earth",
+		"fact": "The Blue Marble, photographed by the Apollo 17 crew in 1972. Most of the atmosphere's mass lies within 16 km of the surface: relative to the planet it is far thinner than a banana's peel.",
+		"bg": "#05070d",
+		"visual": {
+			"type": "image",
+			"commons": "The Earth seen from Apollo 17.jpg"
+		}
+	},
+	{
+		"id": "jupiter",
+		"exp": 8.15,
+		"title": "Jupiter",
+		"fact": "More than twice as massive as all the other planets combined. The Great Red Spot is a storm wider than Earth that has been raging for at least 190 years.",
+		"bg": "#06060b",
+		"visual": {
+			"type": "image",
+			"commons": "Jupiter and its shrunken Great Red Spot.jpg"
+		}
+	},
+	{
+		"id": "sun",
+		"exp": 9.14,
+		"title": "The Sun",
+		"fact": "Its light reaches us in 8 minutes 20 seconds, but the energy it carries was made in the core and spent tens of thousands of years or more bouncing its way out to the surface.",
+		"bg": "#0a0604",
+		"visual": {
+			"type": "image",
+			"commons": "SDO 20180214 000000 4096 HMIIC (HMI).jpg"
+		}
+	},
+	{
+		"id": "inner-planets",
+		"exp": 11.48,
+		"title": "The inner Solar System",
+		"fact": "The orbits of Mercury, Venus, Earth and Mars, to scale. Venus is the hottest planet at about 465 °C — hotter than Mercury, which is closer to the Sun — thanks to a runaway greenhouse effect.",
+		"bg": "#04050a",
+		"visual": {
+			"type": "generated",
+			"kind": "inner-orbits"
+		}
+	},
+	{
+		"id": "outer-planets",
+		"exp": 12.95,
+		"title": "The planets",
+		"fact": "Neptune's orbit, 60 AU across. Neptune takes 165 years to go round the Sun: it completed its first full orbit since its discovery only in 2011.",
+		"bg": "#03040a",
+		"visual": {
+			"type": "generated",
+			"kind": "outer-orbits"
+		}
+	},
+	{
+		"id": "heliosphere",
+		"exp": 13.55,
+		"title": "The heliosphere",
+		"fact": "The bubble blown by the solar wind. Voyager 1, launched in 1977, crossed its edge in 2012 and is now about a light-day from Earth: a radio message takes 24 hours to reach it.",
+		"bg": "#03030a",
+		"visual": {
+			"type": "generated",
+			"kind": "heliosphere"
+		}
+	},
+	{
+		"id": "oort-cloud",
+		"exp": 16.48,
+		"title": "The Oort cloud",
+		"fact": "A hypothesised shell of trillions of icy bodies, the source of long-period comets. Nobody has ever seen it directly: it is inferred from comet orbits. Its outer edge may reach a third of the way to the nearest star.",
+		"bg": "#030308",
+		"visual": {
+			"type": "generated",
+			"kind": "oort"
+		}
+	},
+	{
+		"id": "orion-nebula",
+		"exp": 17.35,
+		"title": "The Orion Nebula",
+		"fact": "A stellar nursery 1,300 light-years away, visible to the naked eye in Orion's sword. Hubble found dozens of protoplanetary discs inside it: solar systems being born.",
+		"bg": "#07040a",
+		"visual": {
+			"type": "image",
+			"commons": "Orion Nebula - Hubble 2006 mosaic.jpg"
+		}
+	},
+	{
+		"id": "milky-way",
+		"exp": 20.98,
+		"title": "The Milky Way",
+		"fact": "100 to 400 billion stars. The Sun takes about 230 million years to circle the centre; the last time it was where it is now, the first dinosaurs were appearing. This is an artist's impression — no one can photograph our galaxy from outside.",
+		"bg": "#040309",
+		"visual": {
+			"type": "image",
+			"commons": "Artist’s impression of the Milky Way.jpg"
+		}
+	},
+	{
+		"id": "local-group",
+		"exp": 22.98,
+		"title": "The Local Group",
+		"fact": "More than 80 galaxies dominated by the Milky Way and Andromeda. Andromeda is approaching at about 110 km/s, but recent simulations give only about even odds that the two will merge in the next 10 billion years.",
+		"bg": "#030208",
+		"visual": {
+			"type": "generated",
+			"kind": "local-group"
+		}
+	},
+	{
+		"id": "laniakea",
+		"exp": 24.69,
+		"title": "Laniakea supercluster",
+		"fact": "Our home supercluster, mapped in 2014 by how galaxies move: about 100,000 of them flowing toward a region called the Great Attractor. Its name is Hawaiian for 'immeasurable heaven'.",
+		"bg": "#020207",
+		"visual": {
+			"type": "generated",
+			"kind": "cosmic-web"
+		}
+	},
+	{
+		"id": "universe",
+		"exp": 26.94,
+		"title": "The observable universe",
+		"fact": "93 billion light-years across, even though the universe is only 13.8 billion years old — space kept expanding while the light was travelling. This is the cosmic microwave background, the oldest light there is, mapped across the whole sky by NASA's WMAP.",
+		"bg": "#020205",
+		"visual": {
+			"type": "image",
+			"commons": "WMAP 2012.png"
+		}
+	}
+]

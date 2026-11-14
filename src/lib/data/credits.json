@@ -1,0 +1,167 @@
+{
+	"virus": {
+		"file": "img/virus.webp",
+		"width": 1593,
+		"height": 1600,
+		"author": "Alissa Eckert, MS; Dan Higgins, MAM",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:SARS-CoV-2_without_background.png"
+	},
+	"ecoli": {
+		"file": "img/ecoli.webp",
+		"width": 1600,
+		"height": 913,
+		"author": "CDC/Janice Haney Carr",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Escherichia_coli_O157-H7_CDC_ID-10071.tif"
+	},
+	"rbc": {
+		"file": "img/rbc.webp",
+		"width": 500,
+		"height": 326,
+		"author": "Electron Microscopy Facility at The National Cancer Institute at Frederick (NCI-Frederick)",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Red_White_Blood_cells.jpg"
+	},
+	"pollen": {
+		"file": "img/pollen.webp",
+		"width": 1228,
+		"height": 935,
+		"author": "Dartmouth Electron Microscope Facility, Dartmouth College",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Misc_pollen_colorized.jpg"
+	},
+	"tardigrade": {
+		"file": "img/tardigrade.webp",
+		"width": 1572,
+		"height": 1205,
+		"author": "Schokraie E, Warnken U, Hotz-Wagenblatt A, Grohme MA, Hengherr S, et al. (2012)",
+		"license": "CC BY 2.5",
+		"licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+		"source": "https://commons.wikimedia.org/wiki/File:SEM_image_of_Milnesium_tardigradum_in_active_state_-_journal.pone.0045682.g001-2.png"
+	},
+	"bee": {
+		"file": "img/bee.webp",
+		"width": 1600,
+		"height": 1264,
+		"author": "John Severns (Severnjc)",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:European_honey_bee_extracts_nectar.jpg"
+	},
+	"banana": {
+		"file": "img/banana.webp",
+		"width": 1600,
+		"height": 1410,
+		"author": "Evan-Amos",
+		"license": "CC BY-SA 3.0",
+		"licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+		"source": "https://commons.wikimedia.org/wiki/File:Banana-Single.jpg"
+	},
+	"human": {
+		"file": "img/human.webp",
+		"width": 1177,
+		"height": 1600,
+		"author": "Leonardo da Vinci",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Da_Vinci_Vitruve_Luc_Viatour.jpg"
+	},
+	"whale": {
+		"file": "img/whale.webp",
+		"width": 800,
+		"height": 600,
+		"author": "NOAA Fisheries (TBjornstad 11:20, 18 April 2007 (UTC))",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Blue_Whale_001_noaa_body_color.jpg"
+	},
+	"saturn-v": {
+		"file": "img/saturn-v.webp",
+		"width": 1280,
+		"height": 1600,
+		"author": "NASA",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Apollo_11_Launch_-_GPN-2000-000630.jpg"
+	},
+	"burj-khalifa": {
+		"file": "img/burj-khalifa.webp",
+		"width": 1600,
+		"height": 1200,
+		"author": "Meandmybrix",
+		"license": "CC0",
+		"licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+		"source": "https://commons.wikimedia.org/wiki/File:Burj_Khalifa_Image.jpg"
+	},
+	"everest": {
+		"file": "img/everest.webp",
+		"width": 1600,
+		"height": 1067,
+		"author": "Luca Galuzzi (Lucag)",
+		"license": "CC BY-SA 2.5",
+		"licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+		"source": "https://commons.wikimedia.org/wiki/File:Everest_North_Face_toward_Base_Camp_Tibet_Luca_Galuzzi_2006.jpg"
+	},
+	"hurricane": {
+		"file": "img/hurricane.webp",
+		"width": 1600,
+		"height": 1059,
+		"author": "Image courtesy of Mike Trenchard, Earth Sciences & Image Analysis Laboratory, NASA Johnson Space Center.",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Hurricane_Isabel_from_ISS.jpg"
+	},
+	"moon": {
+		"file": "img/moon.webp",
+		"width": 1600,
+		"height": 1521,
+		"author": "Gregory H. Revera",
+		"license": "CC BY-SA 3.0",
+		"licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+		"source": "https://commons.wikimedia.org/wiki/File:FullMoon2010.jpg"
+	},
+	"earth": {
+		"file": "img/earth.webp",
+		"width": 1599,
+		"height": 1600,
+		"author": "NASA/Apollo 17 crew; taken by either Harrison Schmitt or Ron Evans",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:The_Earth_seen_from_Apollo_17.jpg"
+	},
+	"jupiter": {
+		"file": "img/jupiter.webp",
+		"width": 940,
+		"height": 940,
+		"author": "NASA, ESA, and A. Simon (Goddard Space Flight Center)",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Jupiter_and_its_shrunken_Great_Red_Spot.jpg"
+	},
+	"sun": {
+		"file": "img/sun.webp",
+		"width": 1600,
+		"height": 1600,
+		"author": "Courtesy of NASA/SDO and the AIA, EVE, and HMI science teams.",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:SDO_20180214_000000_4096_HMIIC_(HMI).jpg"
+	},
+	"orion-nebula": {
+		"file": "img/orion-nebula.webp",
+		"width": 1600,
+		"height": 1600,
+		"author": "NASA, ESA, M. Robberto (Space Telescope Science Institute/ESA) and the Hubble Space Telescope Orion Treasury Project Team",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Orion_Nebula_-_Hubble_2006_mosaic.jpg"
+	},
+	"milky-way": {
+		"file": "img/milky-way.webp",
+		"width": 1600,
+		"height": 1600,
+		"author": "NASA/JPL-Caltech/ESO/R. Hurt",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:Artist%E2%80%99s_impression_of_the_Milky_Way.jpg"
+	},
+	"universe": {
+		"file": "img/universe.webp",
+		"width": 1600,
+		"height": 800,
+		"author": "NASA / WMAP Science Team",
+		"license": "Public domain",
+		"source": "https://commons.wikimedia.org/wiki/File:WMAP_2012.png"
+	}
+}
