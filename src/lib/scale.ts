@@ -57,6 +57,16 @@ export function layerAlpha(s: number): number {
 	return smoothstep(-0.8, -0.3, s);
 }
 
+/**
+ * Extra fade by how many stops away a layer is (0 = the layer's own stop).
+ * Stops can be under a decade apart, where layerAlpha alone would leave the
+ * neighbour faintly printed over the subject; this clears it by the time
+ * the view lands on the next stop, while keeping the mid-way cross-fade.
+ */
+export function stopFade(stopsAway: number): number {
+	return 1 - smoothstep(0.5, 0.95, Math.abs(stopsAway));
+}
+
 const SUPERSCRIPTS: Record<string, string> = {
 	'-': '⁻',
 	'0': '⁰',

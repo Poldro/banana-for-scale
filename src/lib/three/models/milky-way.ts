@@ -6,14 +6,14 @@
 import { Group, Scene, Vector3 } from 'three';
 import { disposeTree } from '../dispose';
 import { glowSprite } from '../kit';
-import { pointBuffer, pointCloud } from '../points';
+import { pointBuffer, pointCloud, thinningGain } from '../points';
 import type { ModelFactory, ModelLabel } from '../types';
 import { addSpiral } from './galaxy';
 
 /** The Sun sits about 26,000 light-years out; the stop's radius is 50,000. */
 const SUN_DISTANCE = 0.52;
 
-export const milkyWay: ModelFactory = () => {
+export const milkyWay: ModelFactory = ({ detail }) => {
 	const scene = new Scene();
 	const view = new Group();
 	view.rotation.x = 0.55;
@@ -25,12 +25,12 @@ export const milkyWay: ModelFactory = () => {
 	addSpiral(buffer, {
 		centre: new Vector3(),
 		radius: 1,
-		count: 22000,
+		count: Math.round(22000 * detail),
 		seed: 7,
 		arms: 4,
 		grain: 0.01
 	});
-	const stars = pointCloud(buffer.build(), 0.9);
+	const stars = pointCloud(buffer.build(), 0.9, thinningGain(detail));
 	disc.add(stars.points);
 	disc.add(glowSprite('#ffd9a0', 0.7, 0.55));
 	const sun = glowSprite('#fff2c8', 0.035);

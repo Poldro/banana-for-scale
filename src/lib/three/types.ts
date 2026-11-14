@@ -27,6 +27,8 @@ export interface ModelContext {
 	readonly renderer: WebGLRenderer;
 	/** Neutral studio lighting for physically based materials. */
 	readonly environment: Texture;
+	/** Multiplier for particle counts: below 1 on phones. */
+	readonly detail: number;
 }
 
 export type ModelFactory = (ctx: ModelContext) => ModelScene;

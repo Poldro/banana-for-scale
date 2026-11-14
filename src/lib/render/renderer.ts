@@ -4,14 +4,27 @@
  */
 import { base } from '$app/paths';
 import type { Credit, Level } from '$lib/levels';
-import { formatLength, layerAlpha } from '$lib/scale';
+import { formatLength, layerAlpha, stopFade } from '$lib/scale';
 import { GENERATORS } from './generators';
 import { luminance, mixHex } from './color';
 import type { ModelDrawer } from './model-drawer';
-import { COMPACT_WIDTH, LENS_RADIUS, horizon, settledness, smallerLayout, type Point, type Stage } from './reference';
+import { createLru } from '$lib/perf/lru';
+import type { DeviceProfile } from '$lib/perf/device';
+import {
+	COMPACT_WIDTH,
+	LENS_RADIUS,
+	NEIGHBOUR_CLIP,
+	horizon,
+	settledness,
+	smallerLayout,
+	type Point,
+	type Stage
+} from './reference';
 
 /** Levels within this many positions of the view get their images loaded. */
 const PRELOAD_RADIUS = 3;
+/** Fainter layers (mid-fade) use their 2D picture instead of a 3D render. */
+const MIN_MODEL_ALPHA = 0.25;
 /** Natural size of a level as a fraction of the viewport's short side. */
 const NATURAL_FRACTION = 0.78;
 /** Share of a portrait phone screen left above the info panel. */
@@ -57,12 +70,17 @@ function feather(img: HTMLImageElement, featherEdges: boolean): HTMLCanvasElemen
 export function createRenderer(
 	canvas: HTMLCanvasElement,
 	levels: readonly Level[],
-	credits: Readonly<Record<string, Credit>>
+	credits: Readonly<Record<string, Credit>>,
+	device: DeviceProfile
 ): Renderer {
 	const ctxOrNull = canvas.getContext('2d');
 	if (!ctxOrNull) throw new Error('2D canvas not supported');
 	const ctx = ctxOrNull;
-	const images = new Map<string, ImageState>();
+	// Least recently drawn photos are released so memory stays flat while scrolling.
+	const images = createLru<string, ImageState>(device.imageCache, (img) => {
+		if (img instanceof HTMLCanvasElement) img.width = img.height = 0;
+	});
+	let modelBudget = 0;
 	let width = 0;
 	let height = 0;
 	let models: ModelDrawer | null = null;
@@ -79,7 +97,7 @@ export function createRenderer(
 
 	function load(level: Level) {
 		const credit = credits[level.id];
-		if (!credit || images.has(level.id)) return;
+		if (!credit || images.get(level.id) !== undefined) return;
 		images.set(level.id, 'loading');
 		const img = new Image();
 		img.decoding = 'async';
@@ -87,10 +105,14 @@ export function createRenderer(
 		img
 			.decode()
 			.then(() => {
+				// Evicted while decoding: the view has moved on, skip the work.
+				if (images.get(level.id) !== 'loading') return;
 				const multiply = level.visual.type === 'image' && level.visual.blend === 'multiply';
 				images.set(level.id, feather(img, !multiply));
 			})
-			.catch(() => images.set(level.id, 'error'));
+			.catch(() => {
+				if (images.get(level.id) === 'loading') images.set(level.id, 'error');
+			});
 	}
 
 	function background(position: number): string {
@@ -100,7 +122,12 @@ export function createRenderer(
 	}
 
 	function drawLevel(level: Level, r: number, t: number) {
-		if (level.model && models?.draw(ctx, level.model.kind, r, t, spin)) return;
+		if (level.model && models && modelBudget > 0 && ctx.globalAlpha >= MIN_MODEL_ALPHA) {
+			if (models.draw(ctx, level.model.kind, r, t, spin)) {
+				modelBudget--;
+				return;
+			}
+		}
 		const visual = level.visual;
 		if (visual.type === 'generated') {
 			GENERATORS[visual.kind](ctx, r, t);
@@ -142,7 +169,9 @@ export function createRenderer(
 	/** The next smaller stop at true scale beside the subject, magnified if tiny. */
 	function drawSmaller(level: Level, st: Stage, exp: number, ink: string, t: number) {
 		const r = st.natural * Math.pow(10, level.exp - exp);
-		const { anchor, lens, label } = smallerLayout(st, { width, height }, r);
+		const layout = smallerLayout(st, { width, height }, r);
+		if (!layout) return;
+		const { anchor, lens, label } = layout;
 		ctx.save();
 		ctx.translate(anchor.x, anchor.y);
 		if (lens) {
@@ -152,7 +181,7 @@ export function createRenderer(
 			ctx.fill();
 		} else {
 			ctx.beginPath();
-			ctx.arc(0, 0, r * 1.15, 0, Math.PI * 2);
+			ctx.arc(0, 0, r * NEIGHBOUR_CLIP, 0, Math.PI * 2);
 			ctx.clip();
 			drawLevel(level, r, t);
 		}
@@ -216,6 +245,7 @@ export function createRenderer(
 
 	function frame(position: number, exp: number, t: number, userSpin = 0) {
 		spin = userSpin;
+		modelBudget = device.rendersPerFrame;
 		ctx.globalCompositeOperation = 'source-over';
 		ctx.globalAlpha = 1;
 		ctx.fillStyle = background(position);
@@ -224,12 +254,11 @@ export function createRenderer(
 
 		for (let i = levels.length - 1; i >= 0; i--) {
 			const level = levels[i];
-			if (Math.abs(i - position) <= PRELOAD_RADIUS) {
-				load(level);
-				if (level.model) models?.preload(level.model.kind);
-			}
+			const distance = Math.abs(i - position);
+			if (distance <= PRELOAD_RADIUS) load(level);
+			if (level.model && distance <= device.modelPreload) models?.preload(level.model.kind);
 			const s = level.exp - exp;
-			const alpha = layerAlpha(s);
+			const alpha = layerAlpha(s) * stopFade(i - position);
 			if (alpha < 0.004) continue;
 			ctx.save();
 			ctx.translate(st.cx, st.cy);

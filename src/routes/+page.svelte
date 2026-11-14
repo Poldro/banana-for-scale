@@ -9,6 +9,7 @@
 	import { luminance } from '$lib/render/color';
 	import type { ModelDrawer } from '$lib/render/model-drawer';
 	import { createRenderer } from '$lib/render/renderer';
+	import { currentDevice, type DeviceProfile } from '$lib/perf/device';
 	import { exponentAt, nearestIndex } from '$lib/scale';
 
 	let canvas: HTMLCanvasElement;
@@ -22,8 +23,11 @@
 	let canRender3d = $state(false);
 	let drawer: ModelDrawer | null = null;
 	let renderer: ReturnType<typeof createRenderer> | undefined;
+	let device: DeviceProfile | undefined;
 
 	const THREE_D_KEY = 'banana-for-scale:3d';
+	/** Minimum gap between frames while nothing moves (~30 fps, with slack for timer jitter). */
+	const IDLE_FRAME_MS = 30;
 
 	function readPreference(): boolean {
 		try {
@@ -46,7 +50,7 @@
 		if (!drawer) {
 			try {
 				const { createModelDrawer } = await import('$lib/three/model-drawer');
-				drawer = createModelDrawer(base);
+				drawer = createModelDrawer(base, (device ??= currentDevice()));
 			} catch (error) {
 				console.warn('3D models unavailable, using photos instead', error);
 				canRender3d = false;
@@ -83,7 +87,8 @@
 
 		let r: ReturnType<typeof createRenderer>;
 		try {
-			r = createRenderer(canvas, levels, credits);
+			device ??= currentDevice();
+			r = createRenderer(canvas, levels, credits, device);
 		} catch {
 			failed = true;
 			return;
@@ -96,7 +101,17 @@
 		let lastBg = '';
 		let raf = 0;
 		const t0 = performance.now();
+		let lastFrame = -Infinity;
+		let lastPosition = NaN;
+		let lastSpin = NaN;
 		const loop = (now: number) => {
+			raf = requestAnimationFrame(loop);
+			// At rest only slow ambient motion is left, so half the frame rate is plenty.
+			const idle = position === lastPosition && spin === lastSpin;
+			if (idle && now - lastFrame < IDLE_FRAME_MS) return;
+			lastFrame = now;
+			lastPosition = position;
+			lastSpin = spin;
 			const t = reducedMotion ? 0 : (now - t0) / 1000;
 			r.frame(position, exponentAt(exponents, position), t, spin);
 			const bg = r.background(position);
@@ -106,7 +121,6 @@
 				root.style.setProperty('--bg', bg);
 				root.toggleAttribute('data-light', luminance(bg) > 0.4);
 			}
-			raf = requestAnimationFrame(loop);
 		};
 		raf = requestAnimationFrame(loop);
 

@@ -33,7 +33,9 @@ import { saturnV } from './models/saturn-v';
 import { sun } from './models/sun';
 import { virus } from './models/virus';
 import { innerOrbits, outerOrbits } from './models/orbits';
-import { MAX_RENDER_PX, renderPixels } from './size';
+import { renderPixels } from './size';
+import { createLru } from '$lib/perf/lru';
+import type { DeviceProfile } from '$lib/perf/device';
 import type { ModelContext, ModelFactory, ModelScene } from './types';
 
 const FACTORIES: Readonly<Record<ModelKind, ModelFactory>> = {
@@ -65,11 +67,14 @@ const FACTORIES: Readonly<Record<ModelKind, ModelFactory>> = {
 	cmb
 };
 
-export function createModelDrawer(base: string): ModelDrawer {
+export function createModelDrawer(base: string, device: DeviceProfile): ModelDrawer {
+	const maxPx = device.maxRenderPx;
 	const canvas = document.createElement('canvas');
-	const renderer = new WebGLRenderer({ canvas, alpha: true, antialias: true });
+	// Multisampling costs a lot of fill rate and is invisible on dense phone screens.
+	const antialias = !device.lowPower && (window.devicePixelRatio || 1) < 2;
+	const renderer = new WebGLRenderer({ canvas, alpha: true, antialias, powerPreference: 'high-performance' });
 	renderer.setPixelRatio(1);
-	renderer.setSize(MAX_RENDER_PX, MAX_RENDER_PX, false);
+	renderer.setSize(maxPx, maxPx, false);
 	renderer.setClearColor(0x000000, 0);
 	renderer.toneMapping = ACESFilmicToneMapping;
 	renderer.setScissorTest(true);
@@ -78,13 +83,19 @@ export function createModelDrawer(base: string): ModelDrawer {
 	const environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 	pmrem.dispose();
 
-	const context: ModelContext = { base, renderer, environment };
+	const context: ModelContext = { base, renderer, environment, detail: device.detail };
 	const camera = new OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
 	camera.position.set(0, 0, 10);
-	const scenes = new Map<ModelKind, ModelScene>();
+	// Only the scenes near the view stay alive; the rest free their GPU memory.
+	const scenes = createLru<ModelKind, ModelScene>(device.sceneCache, (scene) => scene.dispose());
 	const anchor = new Vector3();
 	let lost = false;
 	canvas.addEventListener('webglcontextlost', () => (lost = true));
+
+	if (import.meta.env.DEV) {
+		// Dev-only probe for checking that GPU memory stays flat while scrolling.
+		Object.assign(window, { __bananaGpu: () => ({ ...renderer.info.memory, scenes: scenes.size }) });
+	}
 
 	function get(kind: ModelKind): ModelScene {
 		const existing = scenes.get(kind);
@@ -101,7 +112,7 @@ export function createModelDrawer(base: string): ModelDrawer {
 			const model = get(kind);
 			if (!model.ready) return false;
 			const dpr = Math.min(window.devicePixelRatio || 1, 2);
-			const px = renderPixels(r, model.extent, dpr);
+			const px = renderPixels(r, model.extent, dpr, maxPx);
 			if (px === 0) return false;
 
 			model.update(t, spin, px / (2 * model.extent));
@@ -117,7 +128,7 @@ export function createModelDrawer(base: string): ModelDrawer {
 			renderer.render(model.scene, camera);
 			// WebGL's origin is bottom-left, so the render sits at the canvas bottom.
 			const size = r * e;
-			ctx.drawImage(canvas, 0, MAX_RENDER_PX - px, px, px, -size, -size, size * 2, size * 2);
+			ctx.drawImage(canvas, 0, maxPx - px, px, px, -size, -size, size * 2, size * 2);
 			for (const l of model.labels ?? []) {
 				if (!l.anchor.visible) continue;
 				l.anchor.getWorldPosition(anchor).project(camera);
@@ -126,7 +137,6 @@ export function createModelDrawer(base: string): ModelDrawer {
 			return true;
 		},
 		dispose() {
-			for (const s of scenes.values()) s.dispose();
 			scenes.clear();
 			environment.dispose();
 			renderer.dispose();

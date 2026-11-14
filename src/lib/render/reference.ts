@@ -45,7 +45,19 @@ const MARGIN = 16;
 const HEADER_SPACE = 64;
 /** Keeps references clear of the ruler on the right edge. */
 const RULER_SPACE = 64;
-const ANCHOR_OFFSET = 0.85;
+/** Clear space (px) between the subject's outline and the smaller neighbour. */
+const NEIGHBOUR_GAP = 10;
+/** The neighbour is clipped to this multiple of its radius when drawn. */
+export const NEIGHBOUR_CLIP = 1.15;
+/** Preferred direction of the neighbour from the subject: below right (radians, y down). */
+const PREFERRED_ANGLE = Math.PI / 4;
+/** Angles tried, alternating either side of the preferred one. */
+const ANGLES = Array.from({ length: 37 }, (_, k) => {
+	const step = Math.ceil(k / 2) * (Math.PI / 36);
+	return PREFERRED_ANGLE + (k % 2 ? step : -step);
+});
+/** On a phone the text panel starts this far (in subject radii) below the centre. */
+const COMPACT_FLOOR = 1.3;
 const HORIZON_GAP = 1.08;
 const MAX_HORIZON_RADIUS = 1e6;
 /** Below this width the text panel takes the bottom of the screen. */
@@ -66,14 +78,26 @@ export function settledness(position: number): number {
 	return 1 - smoothstep(0.05, 0.3, d);
 }
 
-export function smallerLayout(stage: Stage, viewport: Viewport, radius: number): SmallerLayout {
+/**
+ * Places the smaller neighbour at true scale just outside the subject, on the
+ * first direction where it fits on screen. Returns null when it would only fit
+ * on top of the subject, where it would look like a leftover of the last stop.
+ */
+export function smallerLayout(stage: Stage, viewport: Viewport, radius: number): SmallerLayout | null {
 	const compact = viewport.width < COMPACT_WIDTH;
 	const right = viewport.width - RULER_SPACE;
-	const size = Math.max(radius, 6);
-	const anchor = {
-		x: clamp(stage.cx + stage.natural * ANCHOR_OFFSET, MARGIN + size, right - size),
-		y: clamp(stage.cy + stage.natural * ANCHOR_OFFSET, HEADER_SPACE + size, viewport.height - MARGIN - size)
-	};
+	const size = Math.max(radius * NEIGHBOUR_CLIP, 6);
+	const clearance = stage.natural + size + NEIGHBOUR_GAP;
+	const bottom = compact
+		? Math.min(viewport.height, stage.cy + stage.natural * COMPACT_FLOOR)
+		: viewport.height - MARGIN;
+	const fits = (p: Point) =>
+		p.x >= MARGIN + size && p.x <= right - size && p.y >= HEADER_SPACE + size && p.y <= bottom - size;
+	const anchor = ANGLES.map((a) => ({
+		x: stage.cx + Math.cos(a) * clearance,
+		y: stage.cy + Math.sin(a) * clearance
+	})).find(fits);
+	if (!anchor) return null;
 	const below = (p: Point, r: number): Point | null => (compact ? null : { x: p.x, y: p.y + r + 8 });
 	if (radius >= LENS_THRESHOLD) return { anchor, lens: null, label: below(anchor, radius) };
 

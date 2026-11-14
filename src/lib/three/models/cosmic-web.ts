@@ -6,14 +6,14 @@
 import { Group, Scene, Vector3 } from 'three';
 import { disposeTree } from '../dispose';
 import { glowSprite, seeded } from '../kit';
-import { pointBuffer, pointCloud } from '../points';
+import { pointBuffer, pointCloud, thinningGain } from '../points';
 import type { ModelFactory, ModelLabel } from '../types';
 
 const NODES = 70;
 const LINKS = 3;
 const PER_FILAMENT = 90;
 
-function web() {
+function web(detail: number) {
 	const rand = seeded(101);
 	const nodes = Array.from({ length: NODES }, () => {
 		const v = new Vector3(rand() * 2 - 1, rand() * 2 - 1, rand() * 2 - 1);
@@ -33,7 +33,7 @@ function web() {
 			if (seen.has(key)) continue;
 			seen.add(key);
 			const b = nodes[j];
-			for (let k = 0; k < PER_FILAMENT; k++) {
+			for (let k = 0; k < Math.round(PER_FILAMENT * detail); k++) {
 				const s = rand();
 				const glow = 0.3 + 0.5 * rand();
 				buffer.add(
@@ -51,15 +51,15 @@ function web() {
 			buffer.add(a.x + jitter(), a.y + jitter(), a.z + jitter(), [0.8 * glow, 0.72 * glow, glow], 0.012);
 		}
 	});
-	return pointCloud(buffer.build(), 1);
+	return pointCloud(buffer.build(), 1, thinningGain(detail));
 }
 
-export const cosmicWeb: ModelFactory = () => {
+export const cosmicWeb: ModelFactory = ({ detail }) => {
 	const scene = new Scene();
 	const root = new Group();
 	root.rotation.x = 0.25;
 	scene.add(root);
-	const galaxies = web();
+	const galaxies = web(detail);
 	root.add(galaxies.points);
 	const here = glowSprite('#ffe6a0', 0.05);
 	root.add(here);

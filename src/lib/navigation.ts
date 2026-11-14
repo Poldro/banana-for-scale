@@ -17,6 +17,8 @@ const DRAG_PX_PER_LEVEL = 140;
 /** Largest jump a single input event may cause, in levels. */
 const MAX_STEP = 1.2;
 const SETTLE_DELAY_MS = 220;
+/** Fraction of a level a gesture must travel to commit to the next stop. */
+const COMMIT_THRESHOLD = 0.2;
 /** Radians of rotation per pixel of sideways drag. */
 const SPIN_PER_PX = 0.01;
 const MAX_SPIN_STEP = Math.PI / 2;
@@ -63,12 +65,29 @@ export function dominantAxis(dx: number, dy: number): 'x' | 'y' {
 	return Math.abs(dx) > Math.abs(dy) * 1.5 ? 'x' : 'y';
 }
 
+/**
+ * Keeps one gesture (a scroll burst, trackpad inertia included, or one swipe)
+ * within a single stop of where it began, so a flick can never skip a level.
+ */
+export function gestureGoal(anchor: number, goal: number, count: number): number {
+	return clampPosition(Math.max(anchor - 1, Math.min(anchor + 1, goal)), count);
+}
+
+/** Where a gesture lands: the neighbouring stop if it travelled far enough, else back home. */
+export function settleTarget(anchor: number, goal: number, count: number): number {
+	const travel = goal - anchor;
+	const target = Math.abs(travel) >= COMMIT_THRESHOLD ? anchor + Math.sign(travel) : anchor;
+	return nearestIndex(target, count);
+}
+
 export function createNavigator(opts: NavigatorOptions): Navigator {
 	const state = { position: opts.start };
 	const spin = { angle: 0 };
 	let spinGoal = 0;
 	let goal = opts.start;
 	let settleTimer: ReturnType<typeof setTimeout> | undefined;
+	/** Stop the current gesture started from; undefined between gestures. */
+	let anchor: number | undefined;
 	let touched = false;
 
 	const duration = (base: number) => (opts.reducedMotion ? 0.25 : base);
@@ -85,7 +104,8 @@ export function createNavigator(opts: NavigatorOptions): Navigator {
 	}
 
 	function settle() {
-		const index = nearestIndex(goal, opts.count);
+		const index = anchor === undefined ? nearestIndex(goal, opts.count) : settleTarget(anchor, goal, opts.count);
+		anchor = undefined;
 		animateTo(index, duration(0.7), 'power2.inOut');
 		opts.onSettle(index);
 	}
@@ -95,13 +115,15 @@ export function createNavigator(opts: NavigatorOptions): Navigator {
 			touched = true;
 			opts.onFirstInput();
 		}
-		animateTo(goal + delta, duration(0.6), 'power3.out');
+		anchor ??= nearestIndex(goal, opts.count);
+		animateTo(gestureGoal(anchor, goal + delta, opts.count), duration(0.6), 'power3.out');
 		clearTimeout(settleTimer);
 		settleTimer = setTimeout(settle, SETTLE_DELAY_MS);
 	}
 
 	function goTo(index: number) {
 		clearTimeout(settleTimer);
+		anchor = undefined;
 		const target = nearestIndex(index, opts.count);
 		const distance = Math.abs(target - state.position);
 		animateTo(target, duration(Math.min(0.6 + distance * 0.08, 2.4)), 'power2.inOut');

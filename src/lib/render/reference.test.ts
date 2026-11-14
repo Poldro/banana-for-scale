@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { LENS_RADIUS, LENS_THRESHOLD, horizon, settledness, smallerLayout } from './reference';
+import { LENS_RADIUS, LENS_THRESHOLD, NEIGHBOUR_CLIP, horizon, settledness, smallerLayout } from './reference';
 
 const desktop = { width: 1500, height: 760 };
 const phone = { width: 390, height: 740 };
@@ -17,21 +17,31 @@ describe('settledness', () => {
 	});
 });
 
+/** smallerLayout for cases that always fit. */
+function layout(stage: typeof desktopStage, viewport: typeof desktop, radius: number) {
+	const l = smallerLayout(stage, viewport, radius);
+	if (!l) throw new Error('expected a layout');
+	return l;
+}
+
+const outside = (stage: typeof desktopStage, p: { x: number; y: number }, radius: number) =>
+	Math.hypot(p.x - stage.cx, p.y - stage.cy) - stage.natural - radius * NEIGHBOUR_CLIP;
+
 describe('smallerLayout', () => {
 	it('draws a visible neighbour at true scale beside the subject, without a lens', () => {
-		const l = smallerLayout(desktopStage, desktop, 22);
+		const l = layout(desktopStage, desktop, 22);
 		expect(l.lens).toBeNull();
 		expect(l.anchor.x).toBeGreaterThan(desktopStage.cx);
 		expect(l.anchor.y).toBeGreaterThan(desktopStage.cy);
 	});
 
 	it('adds a magnifier when the neighbour would be a speck', () => {
-		const l = smallerLayout(desktopStage, desktop, LENS_THRESHOLD / 2);
+		const l = layout(desktopStage, desktop, LENS_THRESHOLD / 2);
 		expect(l.lens).not.toBeNull();
 	});
 
 	it('keeps the lens on screen and clear of the ruler on a phone', () => {
-		const { lens } = smallerLayout(phoneStage, phone, 0.001);
+		const { lens } = layout(phoneStage, phone, 0.001);
 		expect(lens).not.toBeNull();
 		if (!lens) return;
 		expect(lens.x - LENS_RADIUS).toBeGreaterThanOrEqual(16);
@@ -40,14 +50,44 @@ describe('smallerLayout', () => {
 	});
 
 	it('puts the lens beside the speck on a phone, so it stays above the text panel', () => {
-		const { anchor, lens } = smallerLayout(phoneStage, phone, 0.001);
+		const { anchor, lens } = layout(phoneStage, phone, 0.001);
 		expect(lens?.y).toBe(anchor.y);
 	});
 
 	it('leaves captions to the text panel on a phone', () => {
-		expect(smallerLayout(phoneStage, phone, 0.001).label).toBeNull();
-		expect(smallerLayout(phoneStage, phone, 20).label).toBeNull();
-		expect(smallerLayout(desktopStage, desktop, 20).label).not.toBeNull();
+		expect(layout(phoneStage, phone, 0.001).label).toBeNull();
+		expect(layout(phoneStage, phone, 20).label).toBeNull();
+		expect(layout(desktopStage, desktop, 20).label).not.toBeNull();
+	});
+
+	it('never draws the neighbour over the subject, even when the two are close in size', () => {
+		// Red blood cell → E. coli: 10^0.58 apart, so the neighbour is a quarter the size.
+		for (const [stage, viewport] of [
+			[desktopStage, desktop],
+			[phoneStage, phone]
+		] as const) {
+			const r = stage.natural * 10 ** -0.58;
+			const l = smallerLayout(stage, viewport, r);
+			if (l) expect(outside(stage, l.anchor, r)).toBeGreaterThanOrEqual(0);
+		}
+		expect(smallerLayout(desktopStage, desktop, desktopStage.natural * 10 ** -0.58)).not.toBeNull();
+	});
+
+	it('tries another direction when below-right is off screen', () => {
+		const r = desktopStage.natural * 10 ** -0.58;
+		const { anchor } = layout(desktopStage, desktop, r);
+		const angle = Math.atan2(anchor.y - desktopStage.cy, anchor.x - desktopStage.cx);
+		expect(Math.abs(angle - Math.PI / 4)).toBeGreaterThan(0.01);
+		expect(anchor.y + r * NEIGHBOUR_CLIP).toBeLessThanOrEqual(desktop.height - 16);
+	});
+
+	it('hides a big neighbour on a phone, where the text panel names it instead', () => {
+		expect(smallerLayout(phoneStage, phone, phoneStage.natural * 10 ** -0.58)).toBeNull();
+	});
+
+	it('gives up rather than overlap when nothing fits', () => {
+		const cramped = { cx: 200, cy: 200, natural: 190 };
+		expect(smallerLayout(cramped, { width: 400, height: 400 }, 80)).toBeNull();
 	});
 });
 

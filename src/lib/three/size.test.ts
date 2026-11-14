@@ -10,6 +10,10 @@ describe('renderPixels', () => {
 		expect(renderPixels(5000, 1, 2)).toBe(MAX_RENDER_PX);
 	});
 
+	it('honours a smaller canvas on low-power devices', () => {
+		expect(renderPixels(5000, 1, 2, 640)).toBe(640);
+	});
+
 	it('returns 0 for specks too small to be worth a 3D render', () => {
 		expect(renderPixels(1, 1, 1)).toBe(0);
 	});

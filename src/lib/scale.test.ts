@@ -8,7 +8,8 @@ import {
 	layerAlpha,
 	nearestIndex,
 	positionOfExponent,
-	sizeRatio
+	sizeRatio,
+	stopFade
 } from './scale';
 
 const exps = [-34.8, -14.1, -9.35, -0.7, 7.1, 26.94];
@@ -78,6 +79,21 @@ describe('layerAlpha', () => {
 		expect(layerAlpha(-2)).toBe(0);
 		expect(layerAlpha(-0.3)).toBe(1);
 		expect(layerAlpha(-0.55)).toBeGreaterThan(0);
+	});
+});
+
+describe('stopFade', () => {
+	it('leaves the cross-fade between two stops untouched', () => {
+		expect(stopFade(0)).toBe(1);
+		expect(stopFade(0.5)).toBe(1);
+		expect(stopFade(-0.5)).toBe(1);
+	});
+
+	it('clears a neighbouring stop once the view lands next to it', () => {
+		expect(stopFade(0.95)).toBe(0);
+		expect(stopFade(-1)).toBe(0);
+		expect(stopFade(0.75)).toBeGreaterThan(0);
+		expect(stopFade(0.75)).toBeLessThan(1);
 	});
 });
 

@@ -19,7 +19,15 @@ export interface PointData {
 	readonly sizes: Float32Array;
 }
 
-export function pointCloud({ positions, colors, sizes }: PointData, minPixels = 1.2): PointCloud {
+/**
+ * Brightness boost for clouds thinned out on low-power devices: with additive
+ * blending, fewer points would otherwise make the whole cloud dimmer.
+ */
+export function thinningGain(detail: number): number {
+	return 1 / Math.sqrt(Math.max(detail, 0.05));
+}
+
+export function pointCloud({ positions, colors, sizes }: PointData, minPixels = 1.2, gain = 1): PointCloud {
 	const geometry = new BufferGeometry();
 	geometry.setAttribute('position', new BufferAttribute(positions, 3));
 	geometry.setAttribute('color', new BufferAttribute(colors, 3));
@@ -29,7 +37,7 @@ export function pointCloud({ positions, colors, sizes }: PointData, minPixels = 
 		depthWrite: false,
 		blending: AdditiveBlending,
 		vertexColors: true,
-		uniforms: { uScale: { value: 100 }, uMin: { value: minPixels } },
+		uniforms: { uScale: { value: 100 }, uMin: { value: minPixels }, uGain: { value: gain } },
 		vertexShader: /* glsl */ `
 			attribute float aSize;
 			uniform float uScale;
@@ -45,13 +53,14 @@ export function pointCloud({ positions, colors, sizes }: PointData, minPixels = 
 				gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 			}`,
 		fragmentShader: /* glsl */ `
+			uniform float uGain;
 			varying vec3 vColor;
 			varying float vFade;
 			void main() {
 				float d = length(gl_PointCoord - 0.5) * 2.0;
 				float a = exp(-d * d * 4.0) * vFade;
 				if (a < 0.01) discard;
-				gl_FragColor = vec4(vColor * a, a);
+				gl_FragColor = vec4(vColor * a * uGain, a);
 			}`
 	});
 	const points = new Points(geometry, material);
