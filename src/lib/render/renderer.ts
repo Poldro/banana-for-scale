@@ -121,9 +121,10 @@ export function createRenderer(
 		return mixHex(levels[i].bg, levels[j].bg, position - i);
 	}
 
-	function drawLevel(level: Level, r: number, t: number) {
+	/** `angle` is the user's rotation; scale references pass 0 so only the subject turns. */
+	function drawLevel(level: Level, r: number, t: number, angle = spin) {
 		if (level.model && models && modelBudget > 0 && ctx.globalAlpha >= MIN_MODEL_ALPHA) {
-			if (models.draw(ctx, level.model.kind, r, t, spin)) {
+			if (models.draw(ctx, level.model.kind, r, t, angle)) {
 				modelBudget--;
 				return;
 			}
@@ -183,7 +184,7 @@ export function createRenderer(
 			ctx.beginPath();
 			ctx.arc(0, 0, r * NEIGHBOUR_CLIP, 0, Math.PI * 2);
 			ctx.clip();
-			drawLevel(level, r, t);
+			drawLevel(level, r, t, 0);
 		}
 		ctx.restore();
 
@@ -205,7 +206,7 @@ export function createRenderer(
 			ctx.fillStyle = level.bg;
 			ctx.fill();
 			ctx.clip();
-			drawLevel(level, LENS_RADIUS * LENS_FILL, t);
+			drawLevel(level, LENS_RADIUS * LENS_FILL, t, 0);
 			ctx.restore();
 			ctx.strokeStyle = `rgba(${ink},0.45)`;
 			ctx.beginPath();
